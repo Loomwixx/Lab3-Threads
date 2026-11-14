@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <time.h>
+#include <CommonCrypto/CommonDigest.h>
 
 #define MAX_DIGITS 16
+#define CC_SHA256_DIGEST_LENGTH 32
 
 static void generate_pin(char *pin, int d){
     for(int i = 0; i < d; i++){
@@ -25,6 +27,14 @@ static bool parse_int(const char *s, long min, long max, long *out)
 
     *out = v; //output 
     return true;
+}
+
+static void print_hash(const unsigned char *hash){
+    printf("HASH: ");
+    for(int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++){
+        printf("%02x", hash[i]);
+    }
+    printf("\n");
 }
 
 int main(int argc, char **argv){
@@ -48,6 +58,11 @@ int main(int argc, char **argv){
 
     char pin[MAX_DIGITS + 1];
     generate_pin(pin, d);
-    printf("PIN: %s\n", pin);
+    //printf("PIN: %s\n", pin);
+
+    unsigned char hash[32];
+
+    CC_SHA256(pin, d, hash);
+    print_hash(hash);
     return 0;
 }
