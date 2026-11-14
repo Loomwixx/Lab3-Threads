@@ -2,6 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <time.h>
+
+#define MAX_DIGITS 16
+
+static void generate_pin(char *pin, int d){
+    for(int i = 0; i < d; i++){
+        pin[i] = (rand()%10 + '0');
+    }
+    pin[d] = '\0';
+}
 
 static bool parse_int(const char *s, long min, long max, long *out)
 {
@@ -18,12 +28,16 @@ static bool parse_int(const char *s, long min, long max, long *out)
 }
 
 int main(int argc, char **argv){
+
+    srand(time(NULL));
+
     if(argc != 3){
         printf("Wrong number of arguments\n");
         return 1;
     }
+
     long d, t;
-    if (!parse_int(argv[1], 4, 16, &d)) {
+    if (!parse_int(argv[1], 4, MAX_DIGITS, &d)) {
         printf("Error: d must be an integer from 4 to 16\n");
         return 1;
     }
@@ -32,5 +46,8 @@ int main(int argc, char **argv){
         return 1;
     }
 
+    char pin[MAX_DIGITS + 1];
+    generate_pin(pin, d);
+    printf("PIN: %s\n", pin);
     return 0;
 }
